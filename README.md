@@ -120,8 +120,6 @@ I like my prompt to be a green variant of my local prompt, like so:
   <img src="prompt.png" height="80"/>
 </kbd>
 
-&nbsp;
-
 This way it's easy to distinguish if you are in your server shell or your local one.
 
 Write your prompt at the bottom of `~/.bashrc`  
