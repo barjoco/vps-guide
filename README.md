@@ -119,6 +119,7 @@ I like my prompt to be a green variant of my local prompt:
 <kbd>
   <img src="prompt.png" height="80"/>
 </kbd>
+
 Like so
 
 This way it's easy to distinguish if you are in your server shell or your local one.
