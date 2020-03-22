@@ -52,7 +52,7 @@ If so, use 'Find and Replace' in your text editor of choice to:
 or use command-line  
 
 `sed --in-place "s/your_server_ip/(your server ip)" "/path/to/this/file"`  
-`sed --in-place "s/your_domain/(your domain name)" "/path/to/this/file"`
+`sed --in-place "s/your_domain/(your domain name)" "/path/to/this/file"`  
 `sed --in-place "s/your_username/(your chosen username)" "/path/to/this/file"`
 
 <br>
