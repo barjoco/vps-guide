@@ -5,6 +5,7 @@
 - [VPS Guide](#vps-guide)
   - [Contents](#contents)
   - [Using this document](#using-this-document)
+  - [Prerequisites](#prerequisites)
   - [Setting up the server](#setting-up-the-server)
     - [Log in as root](#log-in-as-root)
     - [Unlock SSH](#unlock-ssh)
@@ -53,11 +54,12 @@ or use command-line
 `sed --in-place "s/your_domain/(your domain name)" "/path/to/this/file"`  
 `sed --in-place "s/your_username/(your chosen username)" "/path/to/this/file"`
 
-## Setting up the server
+## Prerequisites
 
-Prerequisites:
 - You have purchased a VPS and it's up and running
 - You have knowledge of its IP and root password
+
+## Setting up the server
 
 ### Log in as root
 
