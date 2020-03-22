@@ -29,8 +29,6 @@
   - [Using your server as a reverse proxy](#using-your-server-as-a-reverse-proxy)
     - [Write a basic web server in Go](#write-a-basic-web-server-in-go)
 
-<br>
-
 ## Using this document
 
 This document assumes the following information:  
@@ -54,8 +52,6 @@ or use command-line
 `sed --in-place "s/your_server_ip/(your server ip)" "/path/to/this/file"`  
 `sed --in-place "s/your_domain/(your domain name)" "/path/to/this/file"`  
 `sed --in-place "s/your_username/(your chosen username)" "/path/to/this/file"`
-
-<br>
 
 ## Setting up the server
 
@@ -186,8 +182,6 @@ PermitRootLogin no
 Reload SSH  
 `$ sudo systemctl reload ssh`
 
-<br>
-
 ## Setup Nginx
 
 ### Install Nginx
@@ -210,8 +204,6 @@ You should now visit: **http://your_server_ip** and see the Nginx welcome page.
 `$ sudo systemctl disable nginx`  
 `$ sudo systemctl enable nginx`
 
-<br>
-
 ## Add a domain to the server
 
 1. Update Namecheap nameservers to `ns1.vultr.com` and `ns2.vultr.com`
@@ -231,8 +223,6 @@ NS            ns2.vultr.com
 6. Error check Nginx `sudo nginx -t`
 7. Restart Nginx `sudo systemctl restart nginx`
 8. You should now be able to visit `http://your_domain`
-
-<br>
 
 ## Create a basic site for the domain
 
@@ -304,8 +294,6 @@ Restart Nginx
 And check in your browser: http://your_server_ip  
 You should see the index file you created: **Welcome to your_server_ip**
 
-<br>
-
 ## Certbot SSL certificate
 
 ### Install Certbot
@@ -326,8 +314,6 @@ You should see the index file you created: **Welcome to your_server_ip**
 
 And check in your browser using HTTPS: **https**://your_server_ip
 
-<br>
-
 ## FileZilla setup
 
 1. Go to **Settings** > **Connection** > **SFTP**
@@ -341,8 +327,6 @@ And check in your browser using HTTPS: **https**://your_server_ip
 9. Logon Type: **Key file**
 10. User: your_username
 11. Key file: `your_home_dir/.ssh/id_rsa` (replace your_home_dir with the output of `echo $HOME`)
-
-<br>
 
 ## Using your server as a reverse proxy
 
