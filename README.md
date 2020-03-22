@@ -88,13 +88,15 @@ Add this user to the sudo group
 
 Install **ufw**  
 `# apt update`  
-`# apt install ufw`  
+`# apt install ufw`
 
 Allow SSH  
-`# ufw allow OpenSSH`  
+`# ufw allow OpenSSH`
 
 Enable firewall  
-`# ufw enable`  
+`# ufw enable`
+
+View firewall status  
 `# ufw status`
 
 ### SSH Setup
@@ -117,6 +119,8 @@ I like my prompt to be a green variant of my local prompt, like so:
 <kbd>
   <img src="prompt.png" height="80"/>
 </kbd>
+
+&nbsp;
 
 This way it's easy to distinguish if you are in your server shell or your local one.
 
@@ -170,7 +174,7 @@ Here is the prompt that I use:
 
 For security reasons, it's safer to disable password authentication into the server.
 
-Open the SSD config file  
+Open the SSH config file  
 `$ sudo nano /etc/ssh/sshd_config`
 
 Ensure these settings are as they appear below:
