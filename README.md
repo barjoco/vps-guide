@@ -21,7 +21,7 @@
     - [Nginx controls](#nginx-controls)
   - [Add a domain to the server](#add-a-domain-to-the-server)
   - [Create a basic site for the domain](#create-a-basic-site-for-the-domain)
-    - [Basic site location](#basic-site-location)
+    - [Site location](#site-location)
   - [Certbot SSL certificate](#certbot-ssl-certificate)
     - [Install Certbot](#install-certbot)
     - [Allow HTTPS through firewall](#allow-https-through-firewall)
@@ -228,11 +228,11 @@ NS            ns2.vultr.com
 5. Replace `server_name _` with `server_name _ your_domain www.your_domain`
 6. Error check Nginx `sudo nginx -t`
 7. Restart Nginx `sudo systemctl restart nginx`
-8. You should now be able to visit `http://your_domain`
+8. You should now be able to visit **http://your_domain**
 
 ## Create a basic site for the domain
 
-### Basic site location
+### Site location
 `$ sudo mkdir -p /var/www/your_domain/html`  
 `$ sudo chown -R $USER:$USER /var/www/your_domain/html`  
 `$ sudo chmod -R 755 /var/www/your_domain`
@@ -281,7 +281,7 @@ Symlink your config file to the Nginx sites-available directory.
 Open the Nginx config  
 `sudo nano /etc/nginx/nginx.conf`
 
-Ensure the server_names_hash_bucket_size setting is set to 64:
+Ensure the `server_names_hash_bucket_size` setting is set to 64:
 
 ```conf
 ...
@@ -297,7 +297,7 @@ Restart Nginx
 `sudo nginx -t`  
 `sudo systemctl restart nginx`
 
-And check in your browser: http://your_server_ip  
+And check in your browser: **http://your_server_ip**  
 You should see the index file you created: **Welcome to your_server_ip**
 
 ## Certbot SSL certificate
