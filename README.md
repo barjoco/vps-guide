@@ -1,8 +1,8 @@
-# Server Setup
+# VPS Guide
 
 ## Contents
 
-- [Server Setup](#server-setup)
+- [VPS Guide](#vps-guide)
   - [Contents](#contents)
   - [Using this document](#using-this-document)
   - [Setting up the server](#setting-up-the-server)
