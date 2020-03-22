@@ -1,45 +1,52 @@
-# VPS Guide
+# VPS Guide <!-- omit in toc -->
+ 
+## Contents <!-- omit in toc -->
 
-## Contents
+- [Introduction](#introduction)
+- [Using this document](#using-this-document)
+- [Acquiring a VPS](#acquiring-a-vps)
+  - [VPS provider](#vps-provider)
+  - [Generate SSH key pair](#generate-ssh-key-pair)
+  - [Deplying a new server](#deplying-a-new-server)
+- [Setting up the server](#setting-up-the-server)
+  - [Log in as root](#log-in-as-root)
+  - [Unlock SSH](#unlock-ssh)
+  - [Add user](#add-user)
+  - [Grant admin priviledges](#grant-admin-priviledges)
+  - [Firewall setup](#firewall-setup)
+  - [SSH Setup](#ssh-setup)
+  - [Customise prompt](#customise-prompt)
+  - [Disable passwords](#disable-passwords)
+- [Nginx Setup](#nginx-setup)
+  - [Install Nginx](#install-nginx)
+  - [Allow Nginx HTTP through firewall](#allow-nginx-http-through-firewall)
+  - [Nginx controls](#nginx-controls)
+- [Add a domain to the server](#add-a-domain-to-the-server)
+- [Create a basic site for the domain](#create-a-basic-site-for-the-domain)
+  - [Site location](#site-location)
+- [Certbot SSL certificate](#certbot-ssl-certificate)
+  - [Install Certbot](#install-certbot)
+  - [Allow HTTPS through firewall](#allow-https-through-firewall)
+  - [Add certificate](#add-certificate)
+- [FileZilla setup](#filezilla-setup)
+- [Using Nginx as a reverse proxy](#using-nginx-as-a-reverse-proxy)
+  - [Write a basic web server in Go](#write-a-basic-web-server-in-go)
 
-- [VPS Guide](#vps-guide)
-  - [Contents](#contents)
-  - [Using this document](#using-this-document)
-  - [Prerequisites](#prerequisites)
-  - [Setting up the server](#setting-up-the-server)
-    - [Log in as root](#log-in-as-root)
-    - [Unlock SSH](#unlock-ssh)
-    - [Add user](#add-user)
-    - [Grant admin priviledges](#grant-admin-priviledges)
-    - [Firewall setup](#firewall-setup)
-    - [SSH Setup](#ssh-setup)
-    - [Customise prompt](#customise-prompt)
-    - [Disable passwords](#disable-passwords)
-  - [Setup Nginx](#setup-nginx)
-    - [Install Nginx](#install-nginx)
-    - [Allow Nginx HTTP through firewall](#allow-nginx-http-through-firewall)
-    - [Nginx controls](#nginx-controls)
-  - [Add a domain to the server](#add-a-domain-to-the-server)
-  - [Create a basic site for the domain](#create-a-basic-site-for-the-domain)
-    - [Site location](#site-location)
-  - [Certbot SSL certificate](#certbot-ssl-certificate)
-    - [Install Certbot](#install-certbot)
-    - [Allow HTTPS through firewall](#allow-https-through-firewall)
-    - [Add certificate](#add-certificate)
-  - [FileZilla setup](#filezilla-setup)
-  - [Using your server as a reverse proxy](#using-your-server-as-a-reverse-proxy)
-    - [Write a basic web server in Go](#write-a-basic-web-server-in-go)
+## Introduction
+
+This document will guide you through the procedure of acquiring a VPS, setting it up and securing it, setting up an Nginx web server, linking it with a domain name, acquiring an SSL certificate, setting up a FileZilla FTP client, creating a basic website, and finally, using the Nginx web server as a reverse proxy for running your own programs in Go, Node.js, Python, Java, etc..
 
 ## Using this document
 
 This document assumes the following information:  
 (Note: This guide will still be useful if any of the following isn't true for you. You may be required to modify some of the instructions to suit your own needs)
 
-- You are setting up a server running Debian 10
+- Your server is running Debian 10
 - You are using Linux on your local machine
-- You are using the Vultr VPS service
-- You are using the Namecheap domain registrar
-- You are using the Go programming language
+- You have an account with Vultr
+- You have a domain registered with Namecheap
+- You choose to use the Nginx web server
+- You choose to use the Go programming language
 
 Placeholders are used for some information. You may choose to replace the placeholders with your own valid information.  
 If so, use 'Find and Replace' in your text editor of choice to:
@@ -54,14 +61,68 @@ or use command-line
 `sed --in-place "s/your_domain/(your domain name)" "/path/to/this/file"`  
 `sed --in-place "s/your_username/(your chosen username)" "/path/to/this/file"`
 
-## Prerequisites
+## Acquiring a VPS
 
-- You have purchased a VPS and it's up and running
-- You have knowledge of its IP and root password
+### VPS provider
+
+You can purchase a VPS from numerous VPS providers. For this guide, the provider of choice is Vultr, however, the same steps can be applied for any other provider. You can research and decide which VPS provider you like the best.
+
+### Generate SSH key pair
+
+Before deploying a new server, you should create an SSH key pair to use when authenticating with the server. These are 2 files, a public one and a private one. The public one is uploaded to your server, and the private one is kept secret on your machine. Only the user who has the private key may gain access to the server.
+
+If you don't have a key pair already, generate one by running `ssh-keygen -t rsa -b 4096` on your local machine
+
+Your public key is `~/.ssh/id_rsa.pub`  
+And your private key is `~/.ssh/id_rsa` (you may choose to make a backup of this key)
+
+Log into your Vultr account and go to **Products** > **SSH Keys**
+
+Click **Add SSH Key** in the upper right
+
+Choose an identifying name for your SSH Key, and copy paste the output of `cat ~/.ssh/id_rsa.pub` to the input field below
+
+<img src="add-ssh-key.png" height="300"/>
+
+### Deplying a new server
+
+Log into your Vultr account and go to **Products**
+
+Click the **Deploy New Server** button
+
+<img src="deploy-new-server.png" height="150"/>
+
+Select **Cloud Compute**
+
+<img src="choose-server.png" height="150"/>
+
+Select the server location closest to you
+
+<img src="server-location.png" height="300"/>
+
+Select **Debian 10 x64** (although this procedure can easily be applied to any Linux server)
+
+<img src="server-type.png" height="200"/>
+
+Select the server size most appropriate for your use case
+
+<img src="server-size.png" height="300"/>
+
+Additional features aren't required, but you may choose to pay extra for automatic backups or DDOS protection. A startup script is not required either, but you may choose to create one. 
+
+<img src="additional-features.png" height="300"/>
+
+Choose the SSH key you added to your Vultr account, a hostname for the machine and a label to identify the VPS
+
+<img src="ssh-keys.png" height="200"/>
+
+Then click **Deploy Now**
 
 ## Setting up the server
 
 ### Log in as root
+
+The `ssh` program will look in `~/.ssh` to find your private key.
 
 SSH into the server as root  
 `$ ssh root@your_server_ip`
@@ -117,10 +178,8 @@ At this point you may choose to customise your prompt. Feel free to skip to [Dis
 I like my prompt to be a green variant of my local prompt:
 
 <kbd>
-  <img src="prompt.png" height="80"/>
+  <img src="prompt.png" height="100"/>
 </kbd>
-
-&nbsp;
 
 This way it's easy to distinguish if you are in your server shell or your local one.
 
@@ -129,7 +188,7 @@ Sample: `export PS1='[\u@\h \W]\$ '`
 
 Add colour by prepending `\e[0;31m` before some text. For example `export PS1='[\u@\h \e[0;31m\W]\$ \e[m'`
 
-Make sure to change it back to normal text colour by putting `\e[m` before the end.
+Make sure to change it back to normal colour by putting `\e[m` before the end.
 
 To change colour, replace `0;31` with one of the colour codes below:  
 
@@ -137,35 +196,39 @@ To change colour, replace `0;31` with one of the colour codes below:
 | ----- | ---- | ----- | ---- | ---- | ------ | ----- |
 | 0;30  | 0;34 | 0;32  | 0;36 | 0;31 | 0;35   | 0;33  |
 
-Escape characters that can be used to display information:
+Escape characters can be used to display information.
 
-| Character | Meaning                                                                              |
-| --------- | ------------------------------------------------------------------------------------ |
-| \a        | an ASCII bell character (07)                                                         |
-| \d        | the date  in  "Weekday  Month  Date" format (e.g., "Tue May 26")                     |
-| \e        | an ASCII escape character (033)                                                      |
-| \h        | the hostname up to the first `.'                                                     |
-| \H        | the hostname                                                                         |
-| \j        | the  number of jobs currently managed by the shell                                   |
-| \l        | the basename of the shell's terminal  device  name                                   |
-| \n        | newline                                                                              |
-| \r        | carriage return                                                                      |
-| \s        | the  name  of  the shell, the basename of $0 (the portion following the final slash) |
-| \t        | the current time in 24-hour HH:MM:SS format                                          |
-| \T        | the current time in 12-hour HH:MM:SS format                                          |
-| \@        | the current time in 12-hour am/pm format                                             |
-| \u        | the username of the current user                                                     |
-| \v        | the version of bash (e.g., 2.00)                                                     |
-| \V        | the release of bash,  version  +  patchlevel (e.g., 2.00.0)                          |
-| \w        | the current working directory                                                        |
-| \W        | the  basename of the current working direc­tory                                      |
-| \!        | the history number of this command                                                   |
-| \#        | the command number of this command                                                   |
-| \$        | if the effective UID is 0, a #, otherwise a $                                        |
-| \nnn      | the  character  corresponding  to  the octal number nnn                              |
-| \\        | a backslash                                                                          |
-| \[        | begin a sequence of non-printing characters­                                         |
-| \]        | end a sequence of non-printing characters                                            |
+<details>
+  <summary>Click here for list of escape characters</summary>
+
+  | Character | Meaning                                                                              |
+  | --------- | ------------------------------------------------------------------------------------ |
+  | \a        | an ASCII bell character (07)                                                         |
+  | \d        | the date  in  "Weekday  Month  Date" format (e.g., "Tue May 26")                     |
+  | \e        | an ASCII escape character (033)                                                      |
+  | \h        | the hostname up to the first `.'                                                     |
+  | \H        | the hostname                                                                         |
+  | \j        | the  number of jobs currently managed by the shell                                   |
+  | \l        | the basename of the shell's terminal  device  name                                   |
+  | \n        | newline                                                                              |
+  | \r        | carriage return                                                                      |
+  | \s        | the  name  of  the shell, the basename of $0 (the portion following the final slash) |
+  | \t        | the current time in 24-hour HH:MM:SS format                                          |
+  | \T        | the current time in 12-hour HH:MM:SS format                                          |
+  | \@        | the current time in 12-hour am/pm format                                             |
+  | \u        | the username of the current user                                                     |
+  | \v        | the version of bash (e.g., 2.00)                                                     |
+  | \V        | the release of bash,  version  +  patchlevel (e.g., 2.00.0)                          |
+  | \w        | the current working directory                                                        |
+  | \W        | the  basename of the current working direc­tory                                      |
+  | \!        | the history number of this command                                                   |
+  | \#        | the command number of this command                                                   |
+  | \$        | if the effective UID is 0, a #, otherwise a $                                        |
+  | \nnn      | the  character  corresponding  to  the octal number nnn                              |
+  | \\        | a backslash                                                                          |
+  | \[        | begin a sequence of non-printing characters­                                         |
+  | \]        | end a sequence of non-printing characters                                            |
+</details>
 
 Here is the prompt that I use:  
 `export PS1='\e[0;32m\W \e[m\$ '`
@@ -188,7 +251,7 @@ PermitRootLogin no
 Reload SSH  
 `$ sudo systemctl reload ssh`
 
-## Setup Nginx
+## Nginx Setup
 
 ### Install Nginx
 `$ sudo apt update`  
@@ -196,7 +259,9 @@ Reload SSH
 
 ### Allow Nginx HTTP through firewall
 `$ sudo ufw app list`  
-`$ sudo ufw allow 'Nginx HTTP'`  
+`$ sudo ufw allow 'Nginx HTTP'`
+
+Check the status of the firewall and of Nginx  
 `$ sudo ufw status`  
 `$ systemctl status nginx`
 
@@ -213,7 +278,8 @@ You should now visit: **http://your_server_ip** and see the Nginx welcome page.
 ## Add a domain to the server
 
 1. Update Namecheap nameservers to `ns1.vultr.com` and `ns2.vultr.com`
-2. In Vultr dashboard: **DNS** > **New Domain**
+2. In Vultr dashboard go to **DNS** > **Add Domain**  
+   <img src="add-domain.png" height="100"/>
 3. Add a domain like the following:
    
 ```
@@ -224,15 +290,17 @@ NS            ns1.vultr.com
 NS            ns2.vultr.com
 ```
 
-4. Edit Nginx config `sudo nano /etc/nginx/sites-available/default`
+4. Edit your Nginx config `sudo nano /etc/nginx/sites-available/default`
 5. Replace `server_name _` with `server_name _ your_domain www.your_domain`
-6. Error check Nginx `sudo nginx -t`
-7. Restart Nginx `sudo systemctl restart nginx`
+6. Error check Nginx using `sudo nginx -t`
+7. And restart Nginx using `sudo systemctl restart nginx`
 8. You should now be able to visit **http://your_domain**
 
 ## Create a basic site for the domain
 
 ### Site location
+
+Create a location for your site files  
 `$ sudo mkdir -p /var/www/your_domain/html`  
 `$ sudo chown -R $USER:$USER /var/www/your_domain/html`  
 `$ sudo chmod -R 755 /var/www/your_domain`
@@ -255,7 +323,7 @@ Write the following to this file:
 ```
 
 Open your site's Nginx config file  
-`sudo nano /etc/nginx/sites-available/your_domain`
+`$ sudo nano /etc/nginx/sites-available/your_domain`
 
 Write the following to this file:
 
@@ -275,13 +343,13 @@ server {
 }
 ```
 
-Symlink your config file to the Nginx sites-available directory.  
-`sudo ln -s /etc/nginx/sites-available/your_domain/etc/nginx/sites-enabled/`
+Symlink your config file to the Nginx sites-enabled directory  
+`$ sudo ln -s /etc/nginx/sites-available/your_domain /etc/nginx/sites-enabled/`
 
 Open the Nginx config  
-`sudo nano /etc/nginx/nginx.conf`
+`$ sudo nano /etc/nginx/nginx.conf`
 
-Ensure the `server_names_hash_bucket_size` setting is set to 64:
+To avoid a hash bucket memory problem that can occur when adding additional server names, uncomment this setting in your Nginx config by removing the preceding hash symbol  
 
 ```conf
 ...
@@ -294,13 +362,15 @@ http {
 ```
 
 Restart Nginx  
-`sudo nginx -t`  
-`sudo systemctl restart nginx`
+`$ sudo nginx -t`  
+`$ sudo systemctl restart nginx`
 
-And check in your browser: **http://your_server_ip**  
-You should see the index file you created: **Welcome to your_server_ip**
+And check in your browser: **http://your_domain**  
+You should see the index file you created: **Welcome to your_domain**
 
 ## Certbot SSL certificate
+
+Obtaining an SSL certificate is a requirement for a secure server. This allows users to connect to the server via the encrypted HTTPS protocol.
 
 ### Install Certbot
 
@@ -316,11 +386,17 @@ You should see the index file you created: **Welcome to your_server_ip**
 
 ### Add certificate
 
-`sudo certbot --nginx -d your_domain -d www.your_domain`
+`$ sudo certbot --nginx -d your_domain -d www.your_domain`  
+You may choose to redirect HTTP traffic to HTTPS when asked
 
 And check in your browser using HTTPS: **https://your_server_ip**
 
+If you check your site's config file `/etc/nginx/sites-available/your_domain`, you will notice that Certbot has added settings in the main server block, and additionally, the redirect settings if you chose to enable that when asked.
+
 ## FileZilla setup
+
+FileZilla is a widely used FTP GUI client, used to upload and download files from your server.  
+It is available from all of the main Linux repos, and Windows. For Arch-based distributions, use `sudo pacman -S filezilla`
 
 1. Go to **Settings** > **Connection** > **SFTP**
 2. Click **Add key file...**
@@ -334,7 +410,17 @@ And check in your browser using HTTPS: **https://your_server_ip**
 10. User: your_username
 11. Key file: `your_home_dir/.ssh/id_rsa` (replace your_home_dir with the output of `echo $HOME`)
 
-## Using your server as a reverse proxy
+## Using Nginx as a reverse proxy
+
+Currently, Nginx is serving our files for us. When a user visits our domain, Nginx spits out files from `/var/www/your_domain/html`, and that's all. For basic static websites, this is all that is really needed. However, for more advanced, dynamic websites, you may choose to write your own web server in a language such as Node.js, Go, Python, Java, or any other.
+
+For this, we will use Nginx as a reverse proxy. Nginx will receive requests, and instead of dealing with them itself, it will pass it onto your program.
+
+Nginx receives HTTP requests on port **80**, and HTTPS requests on **443**. When you visit **http://your_domain** it's the same as visiting **http://your_domain:80**
+
+The procedure of reverse proxying is to run a program on a port of your choice (quite often port **8080**), and to have Nginx relay the requests it receives to that port.
+
+Your program runs on a closed port, so users won't visit **http://your_domain:8080** to visit your web server, instead, users are required to go through Nginx (port **80**) to access your web server. This is important for security and stability.
 
 ### Write a basic web server in Go
 
@@ -363,7 +449,7 @@ Save as `helloweb.go` and build with `go build -o helloweb helloweb.go`
   
 Upload the binary onto your server with FileZilla and SSH into the server
 
-Set appropriate file permissions: `sudo chmod 744 helloweb`
+Set appropriate file permissions for **helloweb**: `sudo chmod 744 helloweb`
 
 And run the binary with `./helloweb`
   
@@ -372,8 +458,8 @@ Open another terminal, and SSH into the server
 Run `curl http://localhost:8080` to check it works. The returned text should be `Hello World! 2020-03-22 02:08:16.742889307 +0000 UTC m=+11.757549613`
 
 Then, open your site's config file  
-`sudo nano /etc/nginx/sites-available/your_domain`
-  
+`$ sudo nano /etc/nginx/sites-available/your_domain`
+
 Replace the `location /` section in the main `server` block with the following:
 
 ```
@@ -392,7 +478,28 @@ server {
 ```
 
 Restart Nginx  
-`sudo nginx -t`  
-`sudo systemctl restart nginx`
+`$ sudo nginx -t`  
+`$ sudo systemctl restart nginx`
 
-Check in your browser at `http://your_domain` and you should be able to see the output of the Go program.
+Check in your browser at `http://your_domain` and you should be able to see the output of the Go program
+
+You can have any number of apps running on any number of ports
+
+For example, you can have an entirely different web server running on port **8081**, and access it via **https://your_domain/app2**
+
+Do this by adding an additional location block within this same server block, like the following:
+
+```
+...
+    location /app2 {
+        proxy_pass http://localhost:8081;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection 'upgrade';
+        proxy_set_header Host $host;
+        proxy_cache_bypass $http_upgrade;
+    }
+...
+```
+
+To use multiple domains, you can use this same server block structure, only modifying `server_name my_other_domain` and `proxy_pass` to the port where your other site is running.
