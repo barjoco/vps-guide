@@ -318,7 +318,7 @@ You should see the index file you created: **Welcome to your_server_ip**
 
 `sudo certbot --nginx -d your_domain -d www.your_domain`
 
-And check in your browser using HTTPS: **https**://your_server_ip
+And check in your browser using HTTPS: **https://your_server_ip**
 
 ## FileZilla setup
 
@@ -363,7 +363,9 @@ Save as `helloweb.go` and build with `go build -o helloweb helloweb.go`
   
 Upload the binary onto your server with FileZilla and SSH into the server
 
-Run the binary with `./helloweb`
+Set appropriate file permissions: `sudo chmod 744 helloweb`
+
+And run the binary with `./helloweb`
   
 Open another terminal, and SSH into the server
 
