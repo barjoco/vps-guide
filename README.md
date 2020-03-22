@@ -114,11 +114,12 @@ If your backspace wasn't working before, fix it for this user with `nano ~/.bash
 
 At this point you may choose to customise your prompt. Feel free to skip to [Disable passwords](#disable-passwords) if you aren't concerned about this.
 
-I like my prompt to be a green variant of my local prompt, like so:
+I like my prompt to be a green variant of my local prompt:
 
 <kbd>
   <img src="prompt.png" height="80"/>
 </kbd>
+Like so
 
 This way it's easy to distinguish if you are in your server shell or your local one.
 
