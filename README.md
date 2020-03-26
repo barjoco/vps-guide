@@ -387,7 +387,7 @@ Obtaining an SSL certificate is a requirement for a secure server. This allows u
 `$ sudo certbot --nginx -d your_domain -d www.your_domain`  
 You may choose to redirect HTTP traffic to HTTPS when asked
 
-And check in your browser using HTTPS: **https://your_server_ip**
+And check in your browser using HTTPS: **https://your_domain**
 
 If you check your site's config file `/etc/nginx/sites-available/your_domain`, you will notice that Certbot has added settings in the main server block, and additionally, the redirect settings if you chose to enable that when asked.
 
